@@ -96,10 +96,10 @@ class StatsView @JvmOverloads constructor(
             return
         }
 
-        var startAngle = -90F
+        var startAngle = progress *360F
 
         for ((index, datum) in data.withIndex()) {
-            val angle = 360F * datum * sumCutom(data.sum())
+            val angle = 360F * datum * sumCustom(data.sum())
             paint.color = colors.getOrNull(index) ?: generateRamdomColor()
             canvas.drawArc(
                 oval,
@@ -115,7 +115,7 @@ class StatsView @JvmOverloads constructor(
         }
 
         canvas.drawText(
-            "%.2f%%".format(data.sum() * 100 * sumCutom(data.sum())),
+            "%.2f%%".format(data.sum() * 100 * sumCustom(data.sum())),
             center.x,
             center.y + textPaint.textSize / 4,
             textPaint
@@ -129,7 +129,7 @@ class StatsView @JvmOverloads constructor(
 
     private fun generateRamdomColor() = Random.nextInt(0xFF000000.toInt(), 0xFFFFFFFF.toInt())
 
-    private fun sumCutom(sum: Float): Float =
+    private fun sumCustom(sum: Float): Float =
         if (sum < 1) 1F else sum.pow(-1)
 
     private fun update() {
