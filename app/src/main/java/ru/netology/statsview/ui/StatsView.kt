@@ -30,6 +30,12 @@ class StatsView @JvmOverloads constructor(
     private var lineWidth = AndroidUtils.dp(context, 5)
     private var colors = emptyList<Int>()
 
+    //private var radius = min(w, h) / 2
+    private var center = PointF(0F, 0F)
+
+    private var oval = RectF()
+
+
     init {
         context.withStyledAttributes(attributeSet, R.styleable.StatsView) {
             textSize = getDimension(R.styleable.StatsView_textSize, textSize)
@@ -50,10 +56,6 @@ class StatsView @JvmOverloads constructor(
             invalidate()
         }
 
-    private var radius = 0F
-    private var center = PointF()
-
-    private var oval = RectF()
     private val paint = Paint(
         Paint.ANTI_ALIAS_FLAG
     ).apply {
