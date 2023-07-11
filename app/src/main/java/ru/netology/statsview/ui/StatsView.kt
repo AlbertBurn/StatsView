@@ -1,5 +1,6 @@
 package ru.netology.statsview.ui
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -7,6 +8,7 @@ import android.graphics.PointF
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.LinearInterpolator
 import androidx.core.content.withStyledAttributes
 import ru.netology.statsview.R
 import ru.netology.statsview.utils.AndroidUtils
@@ -35,6 +37,9 @@ class StatsView @JvmOverloads constructor(
 
     private var oval = RectF()
 
+    private var progress = 0F
+    private var valueAnimator: ValueAnimator? = null
+    private val animDuration = 2500
 
     init {
         context.withStyledAttributes(attributeSet, R.styleable.StatsView) {
@@ -53,7 +58,7 @@ class StatsView @JvmOverloads constructor(
     var data: List<Float> = emptyList()
         set(value) {
             field = value
-            invalidate()
+            update()
         }
 
     private val paint = Paint(
@@ -99,10 +104,14 @@ class StatsView @JvmOverloads constructor(
             canvas.drawArc(
                 oval,
                 startAngle,
-                angle,
+                angle * progress,
                 false,
-                paint)
+                paint
+            )
             startAngle += angle
+            if (progress == 1F) {
+                canvas.drawPoint(center.x, center.y - radius, paint)
+            }
         }
 
         canvas.drawText(
@@ -122,4 +131,23 @@ class StatsView @JvmOverloads constructor(
 
     private fun sumCutom(sum: Float): Float =
         if (sum < 1) 1F else sum.pow(-1)
+
+    private fun update() {
+        valueAnimator?.let {
+            it.removeAllListeners()
+            it.cancel()
+        }
+        progress = 0F
+
+        valueAnimator = ValueAnimator.ofFloat(0F, 1F).apply {
+            addUpdateListener { anim ->
+                progress = anim.animatedValue as Float
+                invalidate()
+            }
+            duration = animDuration.toLong()
+            interpolator = LinearInterpolator()
+        }.also {
+            it.start()
+        }
+    }
 }
