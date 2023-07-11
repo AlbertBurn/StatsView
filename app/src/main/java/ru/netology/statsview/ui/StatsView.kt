@@ -11,6 +11,7 @@ import androidx.core.content.withStyledAttributes
 import ru.netology.statsview.R
 import ru.netology.statsview.utils.AndroidUtils
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.random.Random
 
 class StatsView @JvmOverloads constructor(
@@ -89,20 +90,34 @@ class StatsView @JvmOverloads constructor(
         }
 
         var startAngle = -90F
-        data.forEachIndexed() { index, datum ->
-            val angle = datum * 360F
-            paint.color = colors.getOrElse(index) {generateRamdomColor()}
-            canvas.drawArc(oval, startAngle, angle, false, paint)
+
+        for ((index, datum) in data.withIndex()) {
+            val angle = 360F * datum * sumCutom(data.sum())
+            paint.color = colors.getOrNull(index) ?: generateRamdomColor()
+            canvas.drawArc(
+                oval,
+                startAngle,
+                angle,
+                false,
+                paint)
             startAngle += angle
         }
 
         canvas.drawText(
-            "%.2f%%".format(data.sum() * 100),
+            "%.2f%%".format(data.sum() * 100 * sumCutom(data.sum())),
             center.x,
             center.y + textPaint.textSize / 4,
             textPaint
         )
+
+        val lastDot = 1F
+        paint.color = colors.getOrElse(0) { generateRamdomColor() }
+        canvas.drawArc(oval, startAngle, lastDot, false, paint)
+
     }
 
     private fun generateRamdomColor() = Random.nextInt(0xFF000000.toInt(), 0xFFFFFFFF.toInt())
+
+    private fun sumCutom(sum: Float): Float =
+        if (sum < 1) 1F else sum.pow(-1)
 }
