@@ -30,7 +30,7 @@ class StatsView @JvmOverloads constructor(
     private var lineWidth = AndroidUtils.dp(context, 5)
     private var colors = emptyList<Int>()
 
-    //private var radius = min(w, h) / 2
+    private var radius = 0F
     private var center = PointF(0F, 0F)
 
     private var oval = RectF()
@@ -75,7 +75,7 @@ class StatsView @JvmOverloads constructor(
 
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        radius = min(w, h) / 2F - AndroidUtils.dp(context, 5)
+        radius = min(w, h) / 2F - lineWidth / 2
         center = PointF(w / 2F, h / 2F)
         oval = RectF(
             center.x - radius,
